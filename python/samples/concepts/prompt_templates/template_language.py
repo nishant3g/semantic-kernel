@@ -2,6 +2,7 @@
 
 import asyncio
 
+
 from semantic_kernel import Kernel
 from semantic_kernel.connectors.ai.open_ai import OpenAIChatCompletion, OpenAIChatPromptExecutionSettings
 from semantic_kernel.core_plugins import TimePlugin
@@ -11,10 +12,29 @@ from semantic_kernel.prompt_template import KernelPromptTemplate, PromptTemplate
 async def main():
     kernel = Kernel()
 
+    # Add the Azure OpenAI chat completion service
+    from semantic_kernel.connectors.ai.open_ai import AzureChatCompletion
+    import os
+    from dotenv import load_dotenv
+    load_dotenv()
+    # Setting up the deployment name
+    deployment_name = os.environ['AZURE_OPENAI_CHAT_DEPLOYMENT_NAME']
+    # The API key for your Azure OpenAI resource.
+    api_key = os.environ["AZURE_OPENAI_API_KEY"]
+
+    # The base URL for your Azure OpenAI resource. e.g. "https://<your resource name>.openai.azure.com"
+    azure_endpoint = os.environ['AZURE_OPENAI_ENDPOINT']
+
+    
+
     service_id = "template_language"
-    kernel.add_service(
-        OpenAIChatCompletion(service_id=service_id),
-    )
+    kernel.add_service(AzureChatCompletion(service_id="template_language",
+                                           deployment_name=deployment_name, 
+                                           endpoint=azure_endpoint, 
+                                           api_key=api_key))
+    """ kernel.add_service(
+        OpenAIChatCompletion(service_id=service_id), 
+    ) """
 
     kernel.add_plugin(TimePlugin(), "time")
 
