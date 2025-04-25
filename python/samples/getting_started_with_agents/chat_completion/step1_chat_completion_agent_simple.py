@@ -5,6 +5,11 @@ import asyncio
 from semantic_kernel.agents import ChatCompletionAgent
 from semantic_kernel.connectors.ai.open_ai import AzureChatCompletion
 
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
 """
 The following sample demonstrates how to create a chat completion agent that
 answers user questions using the Azure Chat Completion service. The Chat Completion

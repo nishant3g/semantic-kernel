@@ -9,6 +9,11 @@ from semantic_kernel.connectors.ai import FunctionChoiceBehavior
 from semantic_kernel.connectors.ai.open_ai import AzureChatCompletion
 from semantic_kernel.functions import KernelArguments, kernel_function
 
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
 """
 The following sample demonstrates how to create a chat completion agent that
 answers questions about a sample menu using a Semantic Kernel Plugin. The Chat
