@@ -28,13 +28,10 @@ public sealed class GeminiPromptExecutionSettings : PromptExecutionSettings
     private string? _responseMimeType;
     private object? _responseSchema;
     private string? _cachedContent;
+    private IDictionary<string, string>? _labels;
     private IList<GeminiSafetySetting>? _safetySettings;
     private GeminiToolCallBehavior? _toolCallBehavior;
-
-    /// <summary>
-    /// Default max tokens for a text generation.
-    /// </summary>
-    public static int DefaultTextMaxTokens { get; } = 256;
+    private GeminiThinkingConfig? _thinkingConfig;
 
     /// <summary>
     /// Temperature controls the randomness of the completion.
@@ -143,6 +140,25 @@ public sealed class GeminiPromptExecutionSettings : PromptExecutionSettings
         {
             this.ThrowIfFrozen();
             this._safetySettings = value;
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the labels.
+    /// </summary>
+    /// <value>
+    /// The labels with user-defined metadata for the request. It is used for billing and reporting only.
+    /// label keys and values can be no longer than 63 characters (Unicode codepoints) and can only contain lowercase letters, numeric characters, underscores, and dashes. International characters are allowed. label values are optional. label keys must start with a letter.
+    /// </value>
+    [JsonPropertyName("labels")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public IDictionary<string, string>? Labels
+    {
+        get => this._labels;
+        set
+        {
+            this.ThrowIfFrozen();
+            this._labels = value;
         }
     }
 
@@ -262,6 +278,24 @@ public sealed class GeminiPromptExecutionSettings : PromptExecutionSettings
         }
     }
 
+    /// <summary>
+    /// Configuration for the thinking budget in Gemini 2.5.
+    /// </summary>
+    /// <remarks>
+    /// This property is specific to Gemini 2.5 and similar experimental models.
+    /// </remarks>
+    [JsonPropertyName("thinking_config")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public GeminiThinkingConfig? ThinkingConfig
+    {
+        get => this._thinkingConfig;
+        set
+        {
+            this.ThrowIfFrozen();
+            this._thinkingConfig = value;
+        }
+    }
+
     /// <inheritdoc />
     public override void Freeze()
     {
@@ -301,6 +335,7 @@ public sealed class GeminiPromptExecutionSettings : PromptExecutionSettings
             AudioTimestamp = this.AudioTimestamp,
             ResponseMimeType = this.ResponseMimeType,
             ResponseSchema = this.ResponseSchema,
+            ThinkingConfig = this.ThinkingConfig?.Clone()
         };
     }
 
@@ -321,7 +356,7 @@ public sealed class GeminiPromptExecutionSettings : PromptExecutionSettings
         switch (executionSettings)
         {
             case null:
-                return new GeminiPromptExecutionSettings() { MaxTokens = DefaultTextMaxTokens };
+                return new GeminiPromptExecutionSettings();
             case GeminiPromptExecutionSettings settings:
                 return settings;
         }
